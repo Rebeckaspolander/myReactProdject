@@ -12,7 +12,15 @@ app.get("/login",(req, res)=>{
         res.json({
                 username: "admin"
         });
-})
+});
+
+//The browser calls teh get on default.
+app.post("/login", (req, res)=>{
+        // POST send data client -> server
+        console.log("Test");
+        res.sendStatus(200);
+});
+
 
 const server = app.listen(
     process.env.PORT || 3000,
