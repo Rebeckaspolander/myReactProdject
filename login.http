@@ -6,5 +6,6 @@ Content-Type: application/json
 
 {
   "username": "admin",
-  "password": "secret"
+  "password": "secret",
+  "fullname": "Testsson"
 }
