@@ -1,6 +1,6 @@
 import express from "express";
 import bodyParser from "body-parser";
-import cookieParser, {signedCookies} from "cookie-parser";
+import cookieParser from "cookie-parser";
 import dotenv from "dotenv";
 dotenv.config();
 
@@ -9,7 +9,10 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({
         extended:false
     }));
+
+// process.env.COOKIE_SECRET, using .env file where  we define COOKIE_SECRET
 app.use(cookieParser(process.env.COOKIE_SECRET));
+
 //When you go to this path(endpoint) you will get a request and response.
 //This sends just plain text
 // app.get("/login", (req, res)=>{
@@ -42,7 +45,7 @@ const USERS = [
                 password: "secret",
                 fullname: "Testsson"
         }
-]
+];
 
 //The browser calls the get on default.
 app.post("/login", (req, res)=>{
@@ -65,13 +68,21 @@ app.post("/login", (req, res)=>{
                 res.sendStatus(401)
                     .redirect("/");
         }
-
 });
 
 app.use(express.static("public"));
 
+// You cant edit a request but you can edit a response.
+function loginMiddleware(req, res, next){
+        res.user = USERS.find(u => u.username === req.username);
+        //next don´t send the req back to the client, continue..
+        next()
+}
+
+app.use(loginMiddleware);
+
 const server = app.listen(
     process.env.PORT || 3000,
     () => {
-        console.log("I have started on: http://localhost:" + server.address().port)}
-)
+        console.log(`I have started! On: http://localhost:${server.address().port}`)
+});

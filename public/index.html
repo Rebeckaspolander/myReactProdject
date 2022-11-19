@@ -17,4 +17,18 @@
         <a href="register.html">Register</a>
     </div>
 </body>
+<script>
+    //This will wait from a call from the server
+    async function fetchUsername(){
+        //fetch = go to this address on the server
+        const res = await fetch("/login");
+        // if the response is ex. 200 it´s an OK.
+        if(res.ok){
+           const {username, fullname} = await res.json();
+           // Here im looking for your html tag user and replacing its html.
+           document.getElementById("user").innerHTML = `<div> Hello ${fullname}</div>`;
+        }
+    }
+    fetchUsername();
+</script>
 </html>
