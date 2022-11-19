@@ -12,6 +12,7 @@ app.use(bodyParser.urlencoded({
 
 // process.env.COOKIE_SECRET, using .env file where  we define COOKIE_SECRET
 app.use(cookieParser(process.env.COOKIE_SECRET));
+app.use(loginMiddleware);
 
 //When you go to this path(endpoint) you will get a request and response.
 //This sends just plain text
@@ -47,6 +48,7 @@ const USERS = [
         }
 ];
 
+//For logging in..
 //The browser calls the get on default.
 app.post("/login", (req, res)=>{
         // POST send data client -> server
@@ -70,16 +72,39 @@ app.post("/login", (req, res)=>{
         }
 });
 
+app.get("/users", (req, res)=>{
+        // if the user not exist send a 403
+        // "else" show all the USERS.
+        console.log(res.user);
+        if(!res.user){
+                return res.sendStatus(403);
+        }
+        res.json(USERS);
+});
+
+// For register user
+//usernamen will come from the request
+app.post("/users", (req, res)=>{
+        const {username, password, fullname} = req.body;
+        if(!username || !password || !fullname){
+                return res.sendStatus(400);
+        }
+        USERS.push({username: username, password: password, fullname: fullname});
+
+        //after user has push the register button teh browser will go back to the root.
+        res.redirect("/");
+
+})
+
 app.use(express.static("public"));
 
 // You cant edit a request but you can edit a response.
 function loginMiddleware(req, res, next){
-        res.user = USERS.find(u => u.username === req.username);
+        res.user = USERS.find(u => u.username === req.signedCookies?.username);
         //next don´t send the req back to the client, continue..
         next()
 }
 
-app.use(loginMiddleware);
 
 const server = app.listen(
     process.env.PORT || 3000,

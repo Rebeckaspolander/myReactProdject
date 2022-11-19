@@ -7,6 +7,20 @@
     <title>Register</title>
 </head>
 <body>
-    <h1>Register</h1>
+    <h1>Register new user</h1>
+    <div>
+        <form action="/users" method="post">
+            <div><label>Username:
+                <input type="text" name="username" />
+            </label></div>
+            <div><label>Password:
+                <input type="password" name="password" />
+            </label></div>
+            <div><label>Full Name:
+                <input type="text" name="fullname" />
+            </label></div>
+            <div><button>Register</button></div>
+        </form>
+    </div>
 </body>
 </html>
