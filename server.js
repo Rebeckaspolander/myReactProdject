@@ -1,13 +1,15 @@
 import express from "express";
 import bodyParser from "body-parser";
-import cookieParser from "cookie-parser";
+import cookieParser, {signedCookies} from "cookie-parser";
+import dotenv from "dotenv";
+dotenv.config();
 
 const app = express();
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({
         extended:false
     }));
-app.use(cookieParser());
+app.use(cookieParser(process.env.COOKIE_SECRET));
 //When you go to this path(endpoint) you will get a request and response.
 //This sends just plain text
 // app.get("/login", (req, res)=>{
@@ -19,8 +21,15 @@ app.get("/login",(req, res)=>{
         /* res.json({
                 username: "admin"
         });*/
+
+
+        const cookieUsername = req.signedCookies.username
+        if (!cookieUsername){
+                return res.sendStatus(401);
+        }
+        const user = USERS.find(u => u.username === cookieUsername);
         //Instead of sending just username... you will get the username and fullname.
-        const user =USERS.find(u => u.username === req.cookies.username);
+        //const user =USERS.find(u => u.username === req.cookies.username);
 
         const{username, fullname} = user;
         res.json({username, fullname});
@@ -49,7 +58,7 @@ app.post("/login", (req, res)=>{
         //Find me the user with the matching/same username and get me their password,
         //if their password is the same as the password that I received.
         if (user && user.password === password){
-                res.cookie("username", username);
+                res.cookie("username", username, {signed: true});
                 res.sendStatus(200)
                     .redirect("/");
         }else{
