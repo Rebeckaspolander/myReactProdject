@@ -2,6 +2,7 @@ import express from "express";
 
 export const loginPath = new express.Router();
 export const userPath = new express.Router();
+export const logoutPath = new express.Router();
 
 export const USERS = [
     {
@@ -34,6 +35,7 @@ loginPath.get("/",(req, res)=>{
 
     res.json(user);
 
+
 });
 
 //The browser calls the get on default.
@@ -51,8 +53,8 @@ loginPath.post("/", (req, res)=>{
     //if their password is the same as the password that I received.
     if (user && user.password === password){
         res.cookie("username", username, {signed: true});
-        res.sendStatus(200)
-            .redirect("/");
+        //res.sendStatus(200)
+        res.redirect("/");
     }else{
         res.sendStatus(401)
             .redirect("/");
@@ -82,6 +84,12 @@ userPath.post("/", (req, res)=>{
     //after user has push the register button teh browser will go back to the root.
     res.redirect("/");
 });
+
+// For logging out.
+logoutPath.post("/", (req,res )=>{
+    res.cookie("username", null, {signed: false})
+        .redirect("/");
+})
 
 // You cant edit a request but you can edit a response.
 export function loginMiddleware(req, res, next){

@@ -2,10 +2,9 @@ import express from "express";
 import bodyParser from "body-parser";
 import cookieParser from "cookie-parser";
 import dotenv from "dotenv";
-dotenv.config();
+import {loginMiddleware, loginPath, logoutPath, userPath} from "./paths.js";
 
-import {loginMiddleware} from "./paths.js";
-import {loginPath, userPath} from "./paths.js";
+dotenv.config();
 
 const app = express();
 app.use(bodyParser.json());
@@ -15,14 +14,14 @@ app.use(bodyParser.urlencoded({
 
 // process.env.COOKIE_SECRET, using .env file where  we define COOKIE_SECRET
 app.use(cookieParser(process.env.COOKIE_SECRET));
-
 app.use(loginMiddleware);
 app.use("/login", loginPath);
 app.use("/users", userPath);
+app.use("/logout", logoutPath)
 //app.use("/user/{id}", userPath);
 
 
-app.use(express.static("public"));
+app.use(express.static("public/"));
 
 const server = app.listen(
     process.env.PORT || 3000,
